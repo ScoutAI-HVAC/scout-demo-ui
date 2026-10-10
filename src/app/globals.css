@@ -1,0 +1,1806 @@
+@import "tailwindcss";
+
+/* Follow the app's explicit theme, including first paint and manual overrides. */
+.scout-brand-mark-cream,
+html.dark .scout-brand-mark-ink {
+  visibility: hidden;
+}
+html.dark .scout-brand-mark-cream {
+  visibility: visible;
+}
+
+/* One small peeker belongs to the chat composer, not the viewport. Only the
+   raised arm waves; the body, button and quick-help bubble stay planted. */
+.scout-buddy {
+  position: absolute;
+  right: 64px;
+  bottom: calc(100% + 2px);
+  z-index: 1;
+}
+.scout-buddy-trigger {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 68px;
+  height: 66px;
+  padding: 0;
+  cursor: pointer;
+  margin-left: auto;
+}
+.scout-buddy-trigger .scout-buddy-art {
+  flex-shrink: 0;
+  width: 64px;
+  height: 62px;
+}
+/* The resting fingers overlap the material edge by 4px; the body stays above it. */
+.ask-bar .scout-buddy {
+  bottom: calc(100% + 5px);
+}
+@media (min-width: 640px) {
+  .scout-buddy {
+    bottom: calc(100% + 4px);
+  }
+  .ask-bar .scout-buddy {
+    bottom: calc(100% + 7px);
+  }
+}
+@media (max-width: 639px) {
+  .scout-buddy-trigger .scout-buddy-art {
+    width: 58px;
+    height: 56px;
+  }
+}
+.scout-buddy-art {
+  overflow: visible;
+}
+.scout-buddy-arm {
+  transform-origin: 343px 342px;
+  animation: scout-buddy-wave 7s ease-in-out infinite;
+}
+.scout-buddy-art[data-pose="composer"] .scout-buddy-arm {
+  transform-origin: 860px 785px;
+}
+.scout-buddy-card {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: min(208px, calc(100vw - 48px));
+  max-height: min(200px, calc(100dvh - 200px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.scout-buddy[data-open="true"] .scout-buddy-arm {
+  animation-play-state: paused;
+}
+body:has(dialog[open]) .scout-buddy,
+body:has([aria-modal="true"]) .scout-buddy,
+.scout-composer-row:has([role="status"]) .scout-buddy {
+  display: none;
+}
+@keyframes scout-buddy-wave {
+  0%,
+  34%,
+  100% {
+    transform: rotate(0deg);
+  }
+  8%,
+  22% {
+    transform: rotate(-9deg);
+  }
+  15%,
+  29% {
+    transform: rotate(3deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scout-buddy-arm {
+    animation: none;
+  }
+}
+
+/* Narrow phones cannot fit the priorities chip beside the peeker. Reserve
+   one shared offset for chip and panel, stable even while typing hides him. */
+@media (max-width: 389px) {
+  body:has(.scout-buddy) {
+    --buddy-priority-clearance: 28px;
+  }
+}
+
+@keyframes scout-dot-hop {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(3px, -7px) scale(1.12);
+  }
+  50% {
+    transform: translate(6px, 0) scale(1.15, 0.85);
+  }
+  75% {
+    transform: translate(2px, -4px) scale(1);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scout-wordmark:hover .scout-dot,
+  a:focus-visible .scout-wordmark .scout-dot,
+  .scout-wordmark:active .scout-dot {
+    animation: scout-dot-hop 850ms ease-in-out 2;
+  }
+}
+
+/* Shared secondary action treatment for links and buttons, not passive badges.
+   A filled pill, never an outlined one: the outline was the hard line. */
+@utility secondary-control {
+  @apply inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-pill bg-paper-2 px-4 py-2 text-body font-semibold text-ink transition-colors;
+  @apply hover:bg-tan-soft active:bg-tan-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Scout - "Workshop Journal" design tokens
+   Warm editorial cream + Fraunces serif + Plus Jakarta Sans body + a
+   per-agent accent palette.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* ── Surfaces (warm cream family) ──────────────────────────────── */
+  --color-cream: #f7f5f0; /* page background */
+  --color-paper: #fdfcfa; /* card / surface */
+  --color-paper-2: #f1eee6; /* alt stripe / muted surface */
+  --color-tan: #ddd9d1; /* borders */
+  --color-tan-soft: #e8e4dc; /* dividers, subtle outlines */
+
+  /* ── Ink (warm near-black family) ──────────────────────────────── */
+  --color-ink: #2d2a26; /* body text */
+  --color-ink-2: #5a554d; /* secondary text */
+  --color-ink-3: #6f6a62; /* muted text - 4.9:1 on cream */
+  --color-ink-4: #8b867e; /* placeholder / subtle - 3.4:1 on cream */
+
+  /* Text on a solid accent fill (bg-terracotta, bg-sage-deep...). White in
+     light mode; charcoal in dark, where the accents brighten for text and
+     white on them drops to ~2:1. */
+  --color-on-accent: #ffffff;
+
+  /* ── Per-agent accent palette ──────────────────────────────────── */
+  /* Scout / brand - terracotta */
+  --color-terracotta: #d97756;
+  --color-terracotta-soft: #f3d6c8;
+  --color-terracotta-tint: #faeae0;
+  --color-terracotta-deep: #c1684a;
+
+  /* Estimate Follow-Up - sage */
+  --color-sage: #4a9b94;
+  --color-sage-soft: #c0dad7;
+  --color-sage-tint: #e3efed;
+  --color-sage-deep: #3a8079;
+  /* Label-size text ON a sage tint: 5.1:1 there, where sage-deep is 3.9:1. */
+  --color-sage-ink: #316d67;
+  /* The solid "Scout booked" pill: a booking stands apart from the pale
+     sage around it. White on it is 6.0:1. One fill in both themes - on the
+     dark card it reads as a deep teal (2.4:1 against it) without glowing. */
+  --color-booked: #316d67;
+  --color-on-booked: #ffffff;
+
+  /* Call Handler - soft blue */
+  --color-skyblue: #5b8fd9;
+  --color-skyblue-soft: #c8d6ee;
+  --color-skyblue-tint: #e7edf8;
+
+  /* Field Support - lavender */
+  --color-lavender: #8b6db3;
+  --color-lavender-soft: #d2c5e0;
+  --color-lavender-tint: #ece5f2;
+
+  /* Paperwork - golden */
+  --color-golden: #e5a84b;
+  --color-golden-soft: #f3d8a3;
+  --color-golden-tint: #f9ecd1;
+
+  /* Business Intel - warm copper */
+  --color-copper: #b8845a;
+  --color-copper-soft: #ddc0a4;
+  --color-copper-tint: #ede0d0;
+
+  /* Safety - deep terracotta-red (intentionally breaks the palette) */
+  --color-alarm: #c13d2c;
+  --color-alarm-soft: #f0c8c2;
+  --color-alarm-tint: #fbe7e3;
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  --font-display: var(--font-fraunces, Fraunces, Georgia, serif);
+  --font-sans: var(--font-jakarta, "Plus Jakarta Sans", system-ui, sans-serif);
+  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
+
+  /* ── Type scale ─────────────────────────────────────────────────
+     Semantic sizes referenced across the app so text isn't one-off.
+     Each size/line-height matches the Tailwind step it replaces, so
+     adopting a token is a drop-in rename with no visual shift. Compose
+     with a FACE (font-display serif / font-sans) and a WEIGHT utility.
+       text-display  hero / page title   (was text-3xl)
+       text-h1       section title       (text-2xl)
+       text-h2       subsection          (text-xl)
+       text-title    card / panel title  (text-lg)
+       text-body-lg  emphasized body     (text-base)
+       text-body     default body        (text-sm)   ← the standard
+       text-label    secondary / meta    (text-xs)
+       text-caption  eyebrow / badge     (text-[11px])
+       text-micro    finest print        (text-[10px]) */
+  --text-display: 1.875rem;
+  --text-display--line-height: 2.25rem;
+  --text-h1: 1.5rem;
+  --text-h1--line-height: 2rem;
+  --text-h2: 1.25rem;
+  --text-h2--line-height: 1.75rem;
+  --text-title: 1.125rem;
+  --text-title--line-height: 1.75rem;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.5rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-caption: 0.6875rem;
+  --text-caption--line-height: 1rem;
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 0.875rem;
+
+  /* ── Radii ──────────────────────────────────────────────────────── */
+  --radius-pill: 9999px;
+
+  /* ── Shadows (warm, oklab-based instead of cool gray) ──────────── */
+  --shadow-soft: 0 1px 2px oklab(0.25 0.02 0.02 / 0.05), 0 1px 3px oklab(0.25 0.02 0.02 / 0.04);
+  --shadow-card:
+    0 4px 16px -6px oklab(0.25 0.02 0.02 / 0.08), 0 1px 3px oklab(0.25 0.02 0.02 / 0.04);
+  --shadow-lift:
+    0 12px 32px -10px oklab(0.25 0.02 0.02 / 0.12), 0 4px 12px -4px oklab(0.25 0.02 0.02 / 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────────────────── */
+
+html {
+  /* Native checkboxes, radios and ranges in the brand accent, not browser blue. */
+  accent-color: var(--color-terracotta);
+  /* Warm background even before React hydrates. No prefers-color-scheme
+     fallback here on purpose: layout.tsx's blocking script sets `dark` before
+     first paint, and --color-cream inverts with it, so a media-query copy
+     would only duplicate the whole token block below for a no-JS case Next
+     cannot serve anyway. */
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02", "cv11"; /* Jakarta stylistic alternates */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Dark mode - invert surfaces + ink to a warm near-black palette, darken
+   accent tints, brighten accent foregrounds so they still read. The toggle
+   persists the choice in localStorage. Every accent color stays the same hue
+   family so brand identity carries through.
+   ───────────────────────────────────────────────────────────────────────── */
+
+html.dark {
+  /* Surfaces inverted into a warm near-black palette */
+  --color-cream: #211f1c; /* warm charcoal page */
+  --color-paper: #2d2a26; /* brand ink, gently lifted */
+  --color-paper-2: #272420; /* quiet navigation surface */
+  --color-tan: #49443c;
+  --color-tan-soft: #3b3731;
+
+  /* Ink (text) inverted to warm whites */
+  --color-ink: #f7f5f0;
+  --color-ink-2: #c8c1b6;
+  --color-ink-3: #aaa49a;
+  --color-ink-4: #8a847b;
+
+  /* Accent tints darkened so they read on the new surfaces */
+  --color-terracotta-tint: #3a2418;
+  --color-terracotta-soft: #5a3424;
+  --color-sage-tint: #1d2e2c;
+  --color-sage-soft: #2a4441;
+  --color-skyblue-tint: #1c2638;
+  --color-skyblue-soft: #2a3a55;
+  --color-lavender-tint: #2a2233;
+  --color-lavender-soft: #3a2d4a;
+  --color-golden-tint: #322a18;
+  --color-golden-soft: #4a3d22;
+  --color-copper-tint: #2e2620;
+  --color-copper-soft: #423629;
+  --color-alarm-tint: #371b18;
+  --color-alarm-soft: #5a2823;
+
+  /* Brighten accent foreground colors so they pop on the dark tints. The
+     light theme uses "deep" variants on top of pale tints; in dark mode
+     the tints are dark, so the deep colors get drowned out. Push everything
+     toward a brighter mid-tone that still reads as the same hue. */
+  --color-terracotta: #ed967a;
+  --color-terracotta-deep: #f5a98c;
+  --color-sage: #6db9b1;
+  --color-sage-deep: #7cc4bc;
+  --color-sage-ink: #7cc4bc; /* 7.1:1 on the dark sage tint */
+  --color-skyblue: #93b6e8;
+  --color-lavender: #b394d1;
+  --color-golden: #f0c074;
+  --color-copper: #d9b189;
+  --color-alarm: #ee8275;
+
+  --color-on-accent: #211f1c;
+
+  color-scheme: dark;
+}
+
+/* Tabular numerics for stat cards, money, counts. */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Display headings default to Fraunces with optical-size adjustments. */
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Motion - coordinated easing curve + named animations
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Single shared easing token - every transition in the app uses this so
+   the whole UI feels like one piece of software, not eight. */
+:root {
+  --ease-warm: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-quick: 160ms;
+  --duration-soft: 240ms;
+  --duration-deep: 380ms;
+}
+
+@keyframes scout-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fadeIn {
+  animation: scout-fade-in var(--duration-soft) var(--ease-warm) both;
+}
+
+@keyframes scout-page-enter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+/* Apply to top-level page wrappers - gives every navigation a soft ease-in.
+   IMPORTANT: opacity-only animation. Do NOT add `transform`, `filter`,
+   `perspective`, or `backdrop-filter` here. Any of those leave a non-`none`
+   computed value on the wrapper after the animation finishes, which makes
+   the wrapper a containing block for fixed-positioned descendants - every
+   modal + drawer inside the page ends up clamped to the page-content box
+   instead of the viewport.
+   IMPORTANT: fill-mode must stay `backwards`, not `both`/`forwards`. A
+   fill that keeps the opacity keyframe applied after the animation ends
+   makes the wrapper a permanent stacking context, so fixed drawers/modals
+   inside the page paint BELOW the body-level top strip and dock no matter
+   their z-index. `backwards` reverts to natural styles at animation end. */
+.animate-pageEnter {
+  animation: scout-page-enter 360ms var(--ease-warm) backwards;
+}
+
+@keyframes scout-modal-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.animate-modalEnter {
+  animation: scout-modal-enter 240ms var(--ease-warm) both;
+}
+
+@keyframes scout-backdrop-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.animate-backdropFade {
+  animation: scout-backdrop-fade 200ms var(--ease-warm) both;
+}
+
+@keyframes scout-drawer-right {
+  0% {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-drawerRight {
+  animation: scout-drawer-right 280ms var(--ease-warm) both;
+}
+
+@keyframes scout-drawer-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-drawerLeft {
+  animation: scout-drawer-left 280ms var(--ease-warm) both;
+}
+
+/* Staggered cascade - apply animate-fadeIn + one of these stagger utilities. */
+.stagger-1 {
+  animation-delay: 60ms;
+}
+.stagger-2 {
+  animation-delay: 120ms;
+}
+.stagger-3 {
+  animation-delay: 180ms;
+}
+.stagger-4 {
+  animation-delay: 240ms;
+}
+.stagger-5 {
+  animation-delay: 300ms;
+}
+.stagger-6 {
+  animation-delay: 360ms;
+}
+
+/* Hover lift used on cards + pill buttons. */
+.hover-lift {
+  transition:
+    transform var(--duration-quick) var(--ease-warm),
+    box-shadow var(--duration-quick) var(--ease-warm);
+}
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Subtle press feedback for buttons - opposite of hover-lift. */
+.hover-press {
+  transition:
+    transform var(--duration-quick) var(--ease-warm),
+    box-shadow var(--duration-quick) var(--ease-warm),
+    filter var(--duration-quick) var(--ease-warm);
+}
+.hover-press:hover {
+  filter: brightness(1.04);
+}
+.hover-press:active {
+  transform: translateY(0.5px) scale(0.99);
+  filter: brightness(0.97);
+}
+
+/* Selection in the brand color so it doesn't feel like a generic browser. */
+::selection {
+  background: color-mix(in oklab, var(--color-terracotta) 30%, transparent);
+  color: var(--color-ink);
+}
+
+/* Focus ring - warm, not the default browser blue. The ring stays unlayered
+   so a stray `outline-none` cannot strip keyboard focus; the radius is only a
+   base default, so a pill or card keeps its own shape (and its ring follows
+   it) instead of snapping to 6px corners on focus. */
+*:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-terracotta) 70%, transparent);
+  outline-offset: 2px;
+}
+@layer base {
+  *:focus-visible {
+    border-radius: 6px;
+  }
+}
+
+/* Elements that show focus another way (a focus-within ring on their pill
+   wrapper, or a sheet that takes focus on open) opt out of the global ring. */
+.quiet-focus:focus-visible {
+  outline: none;
+}
+/* The chat composer sits inside a rounded bar; the caret is the cue. */
+#scout-composer:focus-visible {
+  outline: none;
+}
+
+/* Reduced-motion respect - collapse all our animations. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn,
+  .animate-pageEnter,
+  .animate-modalEnter,
+  .animate-backdropFade,
+  .animate-drawerRight,
+  .animate-drawerLeft {
+    animation: none;
+  }
+  .hover-lift,
+  .hover-press {
+    transition: none;
+  }
+  .hover-lift:hover,
+  .hover-press:hover,
+  .hover-press:active {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Form primitives - apply to <input>, <textarea>, <select> for consistency
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Fields are FILLED, never outlined (the iOS / ChatGPT field): a soft ink
+   wash that reads on any surface in either theme - cream page, paper card or
+   a paper-2 group - and the accent only arrives with focus, as a crisp edge
+   plus a soft halo. The border stays (transparent) so a field keeps its box
+   size wherever it replaced a bordered one.
+   `.field` is layered so width/padding utilities still size it; the
+   unlayered `.field-warm` is the full-width form of the same look. */
+@layer components {
+  .field {
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--color-ink) 5%, transparent);
+    color: var(--color-ink);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition:
+      background-color var(--duration-quick) var(--ease-warm),
+      box-shadow var(--duration-quick) var(--ease-warm);
+  }
+  .field::placeholder {
+    color: var(--color-ink-4);
+  }
+  .field:hover:not(:disabled):not(:focus) {
+    background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+  }
+  .field:disabled {
+    color: var(--color-ink-3);
+    cursor: not-allowed;
+  }
+}
+.field:focus,
+.field:focus-visible {
+  outline: none;
+  background: var(--color-paper);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--color-terracotta) 80%, transparent),
+    0 0 0 4px color-mix(in oklab, var(--color-terracotta) 16%, transparent);
+}
+html.dark .field:focus,
+html.dark .field:focus-visible {
+  background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+
+.field-warm {
+  width: 100%;
+  background: color-mix(in oklab, var(--color-ink) 5%, transparent);
+  color: var(--color-ink);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0.6rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transition:
+    background-color var(--duration-quick) var(--ease-warm),
+    box-shadow var(--duration-quick) var(--ease-warm);
+}
+.field-warm::placeholder {
+  color: var(--color-ink-4);
+}
+.field-warm:hover:not(:disabled):not(:focus) {
+  background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+.field-warm:focus,
+.field-warm:focus-visible {
+  outline: none;
+  background: var(--color-paper);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--color-terracotta) 80%, transparent),
+    0 0 0 4px color-mix(in oklab, var(--color-terracotta) 16%, transparent);
+}
+html.dark .field-warm:focus,
+html.dark .field-warm:focus-visible {
+  background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+.field-warm:disabled {
+  color: var(--color-ink-3);
+  cursor: not-allowed;
+}
+
+/* Textarea variant inherits everything but allows resize handle. */
+textarea.field-warm {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+/* Native <select> with custom chevron - pure CSS, no JS dep. */
+.select-warm {
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: color-mix(in oklab, var(--color-ink) 5%, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%238b867e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px 12px;
+  color: var(--color-ink);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0.55rem 2rem 0.55rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-quick) var(--ease-warm),
+    background-color var(--duration-quick) var(--ease-warm),
+    box-shadow var(--duration-quick) var(--ease-warm);
+}
+.select-warm:hover:not(:disabled):not(:focus) {
+  background-color: color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+.select-warm:focus,
+.select-warm:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--color-terracotta) 80%, transparent),
+    0 0 0 4px color-mix(in oklab, var(--color-terracotta) 16%, transparent);
+}
+.select-warm:disabled {
+  color: var(--color-ink-3);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* iOS Safari zooms the page when a focused field is under 16px. The viewport
+   used to suppress that with maximum-scale=1, which also forbade pinch-zoom
+   against 11px type (WCAG 1.4.4). Bump the fields on touch pointers instead,
+   so desktop density is untouched and zoom stays the user's to choose. */
+@media (pointer: coarse) {
+  .field,
+  .field-warm,
+  .select-warm {
+    font-size: 1rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Empty states - semantic class for "nothing here yet" surfaces
+   ───────────────────────────────────────────────────────────────────────── */
+
+.empty-state {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  border-radius: 24px;
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
+  text-align: center;
+}
+.empty-state-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: var(--color-terracotta-tint);
+  color: var(--color-terracotta-deep);
+  margin-bottom: 0.25rem;
+}
+.empty-state-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.125rem;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+.empty-state-body {
+  font-size: 0.875rem;
+  color: var(--color-ink-2);
+  max-width: 32rem;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Scout 2.0 shell - floating oval dock + conversational canvas
+   (founder-approved redesign; concept: scout2-redesign-concept.html)
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Glass dock: warm translucent surface that floats over every scene. */
+.dock-shell {
+  /* The signature object, now on the shared material. The border is gone on
+     purpose: a 1px border and an inset rim draw the same line twice, and the
+     rim is the one that sits at device-pixel weight. */
+  background: color-mix(in oklab, var(--color-paper) 96%, transparent);
+  border: 0;
+  /* Prefixed FIRST, everywhere in this file: the CSS optimizer treats the
+     pair as one property and keeps only the last declaration, so an
+     unprefixed-then-prefixed pair compiled to -webkit- alone and Chrome drew
+     no blur on any glass surface. */
+  -webkit-backdrop-filter: var(--mat-regular);
+  backdrop-filter: var(--mat-regular);
+  box-shadow: var(--glass-catch), var(--glass-rim), var(--glass-lift);
+  animation: dock-in 0.8s var(--ease-spring) both;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .dock-shell {
+    background: var(--color-paper);
+  }
+}
+/* Entry motion ONLY - no translateX here. Centering belongs to the element's
+   `-translate-x-1/2` utility, which Tailwind v4 emits as the `translate`
+   property; a translateX in this keyframe's `transform` composes with it
+   instead of replacing it, shifting the console a full width off-center. */
+@keyframes dock-in {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* The terracotta puck that glides beneath the active dock tab. */
+.dock-puck {
+  background: var(--color-terracotta-tint);
+  transition:
+    left var(--duration-deep) var(--ease-warm),
+    width var(--duration-deep) var(--ease-warm);
+}
+
+/* Warm atmosphere behind every scene: two soft radial pools + film grain
+   so the canvas never reads as a flat dashboard background. */
+.scene-atmosphere::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      900px 500px at 50% -10%,
+      color-mix(in oklab, var(--color-terracotta) 7%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      700px 500px at 90% 110%,
+      color-mix(in oklab, var(--color-sage) 6%, transparent),
+      transparent 70%
+    );
+}
+.scene-atmosphere::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+}
+html.dark .scene-atmosphere::after {
+  opacity: 0.09;
+  mix-blend-mode: screen;
+}
+
+/* Conversational greeting - the Scout scene's hero line. The floor is phone
+   territory: round one at 34px wrapped to three display lines; round two at
+   27px still read as a billboard on a real iPhone ("this is terrible, so
+   crowded"). A phone gets a conversational ~22px - ChatGPT scale - and the
+   display treatment stays a desktop thing. */
+.greeting {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 340;
+  font-size: clamp(1.375rem, 5.75vw, 3.25rem);
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+}
+.greeting em {
+  font-style: italic;
+  color: var(--color-terracotta);
+}
+
+/* The chat welcome and priorities are the phone's design on every screen
+   size: a conversational greeting, starter chips, and a "3 to review" chip
+   floating over the composer that opens one panel. Desktop only lines the
+   chip and panel up with the composer, which sits beside the rail. */
+@media (min-width: 640px) {
+  .mobile-chat-welcome .greeting {
+    font-size: 34px;
+    line-height: 1.2;
+  }
+  .mobile-chat-scene .scout-priorities {
+    margin: 0;
+  }
+  /* Left edge of the chat composer (.ask-bar: min(48rem, 100% - rail - 3rem)
+     wide, centered beside the --shell-left rail), so the chip sits on its
+     corner exactly as it does on a phone. */
+  .mobile-chat-scene .mobile-attention-button {
+    position: fixed;
+    left: calc(
+      50% + var(--shell-left, 0px) / 2 - min(24rem, (100% - var(--shell-left, 0px) - 3rem) / 2) +
+        8px
+    );
+    bottom: calc(var(--dock-clearance, 120px) + 4px);
+    z-index: 35;
+  }
+  .mobile-priority-panel {
+    position: fixed;
+    left: calc(
+      50% + var(--shell-left, 0px) / 2 - min(24rem, (100% - var(--shell-left, 0px) - 3rem) / 2)
+    );
+    width: min(32rem, calc(100% - var(--shell-left, 0px) - 3rem));
+    bottom: calc(var(--dock-clearance, 120px) + 4px);
+    z-index: 35;
+    max-height: min(60vh, calc(100vh - 10rem - var(--dock-clearance, 120px)));
+    overflow-y: auto;
+    padding: 16px;
+    border-radius: 24px;
+    background: var(--color-paper);
+    box-shadow: var(--shadow-lift);
+  }
+}
+/* Jump-to-latest arrow: centered over the composer, just above it. */
+.chat-jump-latest {
+  position: fixed;
+  z-index: 36;
+  left: calc(50% + var(--shell-left, 0px) / 2);
+  bottom: calc(var(--dock-clearance, 120px) + 8px);
+  transform: translateX(-50%);
+}
+@media (max-width: 639px) {
+  .chat-jump-latest {
+    left: 50%;
+  }
+}
+/* An open review list owns this space, like other open overlays. */
+body:has(.mobile-priority-panel) .scout-buddy {
+  display: none;
+}
+/* The buddy's "you have N to review" bubble: a little wider than his help card. */
+.scout-buddy-bubble {
+  width: min(240px, calc(100vw - 48px));
+}
+
+/* Priority rows: the phone's filled rows, everywhere the panel opens. */
+.priority-cards {
+  gap: 6px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.priority-cards > button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  gap: 4px 12px;
+  min-height: 80px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--color-paper-2);
+  box-shadow: none;
+}
+.priority-cards .priority-label {
+  grid-column: 1;
+  font-size: 12px;
+  line-height: 16px;
+}
+.priority-cards .priority-headline {
+  grid-column: 1;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.priority-cards .priority-action {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--color-ink-3);
+}
+
+/* Standalone composer material - only used where there is no console to
+   dock into (the tech app). On owner surfaces the composer renders inside
+   .dock-shell and inherits its material, so the bottom of the app is one
+   object rather than two overlapping pills. */
+.ask-bar {
+  background: color-mix(in oklab, var(--color-paper) 82%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 8%, transparent);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 18px 50px -12px oklab(0.25 0.02 0.02 / 0.28),
+    0 4px 14px -6px oklab(0.25 0.02 0.02 / 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-shell {
+    animation: none;
+  }
+  .dock-puck {
+    transition: none;
+  }
+}
+
+/* While typing on a phone the console sheds its tabs: the keyboard already
+   owns half the screen, and the composer is the one thing that must stay
+   visible above it (ChatGPT-style). Desktop keeps the tabs - no keyboard
+   overlay exists there. Pairs with the visualViewport lift in dock.tsx. */
+@media (max-width: 639px) {
+  html {
+    scroll-padding-top: calc(4rem + var(--safe-t) + 16px);
+    scroll-padding-bottom: var(--dock-clearance, 8.5rem);
+    /* Keep pull-to-refresh from taking over a gesture, but let the browser
+       retain its native elastic edge feedback. Heading spacing is structural. */
+    overscroll-behavior-y: contain;
+  }
+  .dock-shell {
+    bottom: calc(8px + var(--safe-b));
+    width: calc(100% - 24px);
+    max-width: 440px;
+    border-radius: 24px;
+    padding: 6px;
+  }
+  .dock-shell nav {
+    display: none;
+  }
+  .dock-shell:not([data-composer-page="true"]) {
+    display: none;
+  }
+  .mobile-chat-welcome {
+    display: flex;
+    min-height: calc(100dvh - 18rem - var(--safe-t) - var(--safe-b));
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-block: 24px;
+  }
+  .mobile-chat-scene .scout-priorities {
+    margin: 0;
+  }
+  .mobile-chat-scene {
+    padding-bottom: 64px;
+  }
+  .mobile-chat-scene .mobile-attention-button {
+    position: fixed;
+    left: max(16px, var(--safe-l));
+    bottom: calc(var(--dock-clearance, 120px) + var(--buddy-priority-clearance, 0px));
+    z-index: 35;
+  }
+  .mobile-priority-panel {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: calc(var(--dock-clearance, 120px) + 8px);
+    z-index: 35;
+    max-height: min(
+      55dvh,
+      calc(
+        100dvh - var(--safe-t) - 4rem - var(--dock-clearance, 120px) -
+          var(--buddy-priority-clearance, 0px) - 76px
+      )
+    );
+    overflow-y: auto;
+    padding: 16px;
+    border: 0;
+    border-radius: 24px;
+    background: var(--color-paper);
+    box-shadow: var(--shadow-lift);
+  }
+  .dock-shell nav > a {
+    flex: 1;
+    min-width: 0;
+    min-height: 56px;
+    padding: 7px 2px;
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .dock-shell nav > a svg {
+    width: 21px;
+    height: 21px;
+  }
+  #scout-console-slot > div {
+    width: 100%;
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  #scout-console-slot textarea {
+    min-width: 0;
+    font-size: 16px;
+  }
+  /* Keep the hint on one line on narrow phones; entered messages still wrap. */
+  #scout-console-slot textarea:placeholder-shown {
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-conversation {
+    position: fixed;
+    z-index: 45;
+    top: var(--conversation-top, calc(4rem + var(--safe-t)));
+    left: max(12px, var(--safe-l));
+    right: max(12px, var(--safe-r));
+    height: var(
+      --conversation-height,
+      calc(100dvh - 4rem - var(--safe-t) - var(--dock-clearance, 96px))
+    );
+    display: flex;
+    flex-direction: column;
+    background: var(--color-paper);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .mobile-conversation > * {
+    flex-shrink: 0;
+  }
+  .mobile-conversation[data-compact="true"][data-keyboard="false"] {
+    padding-bottom: var(--safe-b);
+  }
+  .mobile-conversation > .conversation-messages {
+    flex: 1 1 0%;
+    min-height: 0;
+    max-height: none;
+  }
+  .mobile-conversation > :first-child {
+    padding: 10px;
+  }
+  .mobile-conversation form {
+    padding: 0;
+  }
+  .mobile-conversation input,
+  .mobile-conversation textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  body:has(.mobile-conversation[data-keyboard="true"]) .dock-shell,
+  body:has(.mobile-conversation[data-compact="true"]) .dock-shell,
+  body:has(.mobile-conversation[data-compact="true"]) .mobile-top-strip {
+    visibility: hidden;
+  }
+  .mobile-chat-welcome .greeting {
+    max-width: 20rem;
+    font-size: 28px;
+    line-height: 1.25;
+  }
+  .dock-shell:has(#scout-console-slot :focus) nav {
+    display: none;
+  }
+  .dock-shell:has(#scout-console-slot :focus) #scout-console-slot > div {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+/* The phone header is frosted rather than opaque: an opaque cream bar cut
+   the page's ambient light off at its bottom edge, which drew a hard band
+   across every screen. The blur lets that light through and the short fade
+   below hands off to the page without an edge; scrolled text still
+   dissolves under it. */
+.mobile-top-strip {
+  --strip-fill: color-mix(in oklab, var(--color-cream) 72%, transparent);
+  background: var(--strip-fill);
+  -webkit-backdrop-filter: var(--mat-thin);
+  backdrop-filter: var(--mat-thin);
+}
+.mobile-top-strip::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: 12px;
+  background: linear-gradient(var(--strip-fill), transparent);
+  pointer-events: none;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .mobile-top-strip {
+    background: var(--color-cream);
+  }
+}
+
+.mobile-menu {
+  /* One scroll owner from the logo through the report link: swipes over
+     navigation must not hit a dead zone or move the page behind the drawer. */
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.mobile-menu[open] {
+  animation: mobile-menu-in 360ms var(--ease-ios) both;
+}
+.mobile-menu[open]::backdrop {
+  animation: mobile-menu-fade 260ms ease-out both;
+}
+@keyframes mobile-menu-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes mobile-menu-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu[open],
+  .mobile-menu[open]::backdrop {
+    animation: none;
+  }
+}
+
+/* Settings: a sheet rising from the bottom edge on a phone, a centered panel
+   on desktop. */
+.settings-sheet {
+  animation: sheet-up 420ms var(--ease-ios) both;
+}
+@media (min-width: 640px) {
+  .settings-sheet {
+    animation: scout-modal-enter 240ms var(--ease-warm) both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-sheet {
+    animation: none;
+  }
+}
+
+/* Scout value sheet: rises from the bottom on a phone, a centered panel on
+   desktop. `backwards`, not `both`: a held end frame would beat the inline
+   transform the pull-to-dismiss drag writes. */
+.value-sheet[open] {
+  transition: transform 260ms var(--ease-ios);
+  animation: sheet-up 420ms var(--ease-ios) backwards;
+}
+.value-sheet[open]::backdrop {
+  animation: mobile-menu-fade 260ms ease-out both;
+}
+@media (min-width: 640px) {
+  .value-sheet[open] {
+    animation: scout-modal-enter 240ms var(--ease-warm) backwards;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .value-sheet[open],
+  .value-sheet[open]::backdrop {
+    transition: none;
+    animation: none;
+  }
+}
+/* Estimated value is a forecast: hatched, so it reads differently from
+   collected and billed money even before the label is read. */
+.value-est {
+  background: repeating-linear-gradient(135deg, var(--color-sage-soft) 0 3px, transparent 3px 6px);
+  box-shadow: inset 0 0 0 1px var(--color-sage-soft);
+}
+
+/* Insight rail - the Brain's horizontal card strip above the chat.
+   The native scrollbar is replaced by the header's arrow buttons plus
+   wheel/keyboard scrolling (see insight-tiles.tsx); a hidden scrollbar with
+   no arrows strands anyone on a plain mouse. Edges dissolve ONLY where more
+   content actually exists, so the fade is a real signal rather than
+   decoration - the component stamps data-fade-*. */
+.insight-rail {
+  scrollbar-width: none;
+  scroll-padding-inline: 2px;
+}
+.insight-rail::-webkit-scrollbar {
+  display: none;
+}
+.insight-rail[data-fade-right="true"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
+}
+.insight-rail[data-fade-left="true"] {
+  mask-image: linear-gradient(to left, #000 calc(100% - 44px), transparent);
+  -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 44px), transparent);
+}
+.insight-rail[data-fade-left="true"][data-fade-right="true"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 44px,
+    #000 calc(100% - 44px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 44px,
+    #000 calc(100% - 44px),
+    transparent
+  );
+}
+
+/* ── Agentic progress (flows scan + rail) ─────────────────────────────
+   Shimmer runs on a dedicated bar element, never a page wrapper (see the
+   containing-block warning above scout-page-enter). */
+@keyframes scout-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+.animate-shimmerBar {
+  animation: scout-shimmer 1.6s var(--ease-warm) infinite;
+}
+@keyframes scout-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+.animate-breathe {
+  animation: scout-breathe 1.8s ease-in-out infinite;
+}
+
+/* Generic hidden-scrollbar for horizontal strips whose container clips the
+   bar anyway (settings phone tabs). Content cut at the edge is the scroll
+   affordance; the half-covered native bar just reads as a rendering glitch. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── The activity ticker (Scout page) ─────────────────────────────────────
+   Stock-market river: the track holds two copies of the pill run and slides
+   by exactly one copy's width for a seamless loop. Hover pauses it (you
+   cannot click a moving target); reduced-motion replaces the marquee with a
+   plain scrollable row. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  animation: ticker-scroll 40s linear infinite;
+}
+.ticker:hover .ticker-track,
+.ticker:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker {
+    overflow-x: auto;
+  }
+  .ticker-track {
+    animation: none;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   WARM GLASS - the shared material layer
+   ═════════════════════════════════════════════════════════════════════════
+
+   Scout already floated a dock over a scene, which is the right instinct, but
+   it stopped at "translucent panel". What makes an Apple surface read as glass
+   is not the blur - it is four things layered in a fixed order:
+
+     1. a MATERIAL   translucency + a saturation boost, so colour from behind
+                     bleeds through instead of a flat grey wash
+     2. a LIGHT CATCH a bright hairline along the top edge only, as if a sheet
+                     of glass were catching light from above
+     3. a RIM        a dark hairline around the whole edge, so the sheet has
+                     thickness rather than melting into the page
+     4. a SHADOW     wide and soft, never tight and dark
+
+   Take away 2 and 3 and you get smoked plastic, which is what a lot of
+   "glassmorphism" actually is. They are cheap - two box-shadow rows - and
+   they are the whole difference.
+
+   Dark glass uses a warm cream highlight over the brand's charcoal surface,
+   keeping the same material depth without introducing a separate blue palette.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Safe areas, named once. Every edge-touching surface reads these instead
+     of hard-coding a guess at the home indicator's height. Zero on a desktop
+     browser, real numbers on a phone - which only became true once
+     layout.tsx opted into viewportFit: "cover". */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+
+  /* A hairline. A CSS pixel is two or three device pixels on a phone, so a
+     1px rule that looks right on a laptop looks HEAVY on an iPhone - it is
+     the single most common tell that a web app is a web app. */
+  --hairline: 0.5px;
+
+  /* Material recipes. Thin for chrome that must not fight the content under
+     it, regular for the dock, thick for anything modal. Saturation is what
+     keeps colour alive behind the blur. */
+  --mat-thin: saturate(180%) blur(20px);
+  --mat-regular: saturate(180%) blur(30px);
+  --mat-thick: saturate(190%) blur(44px);
+
+  /* The two hairlines that make a sheet of glass. Light theme: a white catch
+     along the top, a soft ink rim everywhere. */
+  --glass-catch: inset 0 var(--hairline) 0 0 rgb(255 255 255 / 0.72);
+  --glass-rim: inset 0 0 0 var(--hairline) color-mix(in oklab, var(--color-ink) 12%, transparent);
+  --glass-lift:
+    0 20px 48px -16px oklab(0.25 0.02 0.02 / 0.24), 0 6px 16px -8px oklab(0.25 0.02 0.02 / 0.14);
+
+  /* iOS spring. A turn that overshoots a hair and settles reads as physical;
+     a linear or ease-out turn reads as a web page. */
+  --ease-spring: linear(
+    0,
+    0.006,
+    0.025,
+    0.101,
+    0.539 27.2%,
+    0.7,
+    0.83,
+    0.925,
+    0.984,
+    1.014,
+    1.024,
+    1.023,
+    1.017,
+    1.009,
+    1.004,
+    1.001,
+    1
+  );
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+html.dark {
+  /* Warm, quiet highlights match the cream/ink identity in night mode. */
+  --glass-catch: inset 0 var(--hairline) 0 0 rgb(247 245 240 / 0.1);
+  --glass-rim: inset 0 0 0 var(--hairline) rgb(247 245 240 / 0.07);
+  --glass-lift: 0 24px 60px -18px rgb(0 0 0 / 0.72), 0 8px 20px -10px rgb(0 0 0 / 0.5);
+}
+
+/* The material itself. Composable: `.glass` for the sheet, a modifier for
+   thickness. Falls back to an opaque surface where backdrop-filter is
+   unsupported, so the content underneath never shows through unblurred. */
+.glass {
+  background: color-mix(in oklab, var(--color-paper) 72%, transparent);
+  -webkit-backdrop-filter: var(--mat-regular);
+  backdrop-filter: var(--mat-regular);
+  box-shadow: var(--glass-catch), var(--glass-rim), var(--glass-lift);
+  border: 0;
+}
+.glass-thin {
+  -webkit-backdrop-filter: var(--mat-thin);
+  backdrop-filter: var(--mat-thin);
+}
+.glass-thick {
+  background: color-mix(in oklab, var(--color-paper) 82%, transparent);
+  -webkit-backdrop-filter: var(--mat-thick);
+  backdrop-filter: var(--mat-thick);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .glass,
+  .glass-thick {
+    background: var(--color-paper);
+  }
+}
+
+/* Edge fade for anything that scrolls sideways. iOS never hard-clips a row
+   at the screen edge - the content dissolves, which is what tells you there
+   is more of it. The ticker was cutting words in half at both edges. */
+.edge-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade, 38px),
+    #000 calc(100% - var(--edge-fade, 38px)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--edge-fade, 38px),
+    #000 calc(100% - var(--edge-fade, 38px)),
+    transparent 100%
+  );
+}
+
+/* Hairline separator, drawn at true device-pixel weight. */
+.hairline-t {
+  box-shadow: inset 0 var(--hairline) 0 0 color-mix(in oklab, var(--color-ink) 10%, transparent);
+}
+html.dark .hairline-t {
+  box-shadow: inset 0 var(--hairline) 0 0 rgb(247 245 240 / 0.08);
+}
+
+/* Touch behaviour a native app gets for free and the web has to ask for. */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* A rubber-band scroll inside the page must not drag the PAGE behind it. */
+  .scroll-contain {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Press feedback. Every tappable glass thing dips and springs back; Apple's
+   is scale, not colour, which is why their buttons feel like objects. */
+.press {
+  transition:
+    transform 260ms var(--ease-spring),
+    opacity 160ms var(--ease-ios);
+}
+.press:active {
+  transform: scale(0.96);
+}
+@media (prefers-reduced-motion: reduce) {
+  .press,
+  .press:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* The ambient light. Glass only reads as glass when there is something behind it
+   worth refracting - against a flat fill, the best material in the world
+   looks like a grey box. iOS leans on the wallpaper for this; Scout has no
+   wallpaper, so the scene grows two very soft brand-coloured pools of light that the
+   dock and the ticker pass over. Fixed, so they never scroll away, and low
+   enough in opacity that on a bright screen you read them as depth rather
+   than as colour. */
+.scene-atmosphere::before {
+  background-image:
+    radial-gradient(
+      70rem 46rem at 12% -8%,
+      color-mix(in oklab, var(--color-terracotta) 9%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      58rem 40rem at 108% 8%,
+      color-mix(in oklab, var(--color-skyblue) 8%, transparent),
+      transparent 60%
+    );
+}
+html.dark .scene-atmosphere::before {
+  background-image:
+    radial-gradient(
+      72rem 48rem at 8% -10%,
+      color-mix(in oklab, var(--color-sage) 9%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      56rem 40rem at 112% 6%,
+      color-mix(in oklab, var(--color-terracotta) 8%, transparent),
+      transparent 60%
+    );
+}
+
+/* The composer's divider, at hairline weight rather than a full CSS pixel. */
+.dock-shell .dock-divider {
+  border: 0;
+  box-shadow: inset 0 var(--hairline) 0 0 color-mix(in oklab, var(--color-ink) 9%, transparent);
+}
+html.dark .dock-shell .dock-divider {
+  box-shadow: inset 0 var(--hairline) 0 0 rgb(247 245 240 / 0.08);
+}
+
+/* The selected-tab puck: iOS moves a lozenge under the label with a spring
+   rather than cross-fading a background colour. */
+.dock-puck {
+  transition:
+    transform 420ms var(--ease-spring),
+    width 420ms var(--ease-spring);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dock-puck {
+    transition: none;
+  }
+}
+
+/* The specular band. On an iPhone the top of the screen is always a touch
+   brighter than the middle - status-bar chrome, the curve of the glass, the
+   wallpaper's own light. Faking it is what stops a dark app from reading as
+   a flat rectangle of paint, and it is what the dock's light-catch is
+   catching. */
+.scene-atmosphere::before {
+  background-repeat: no-repeat;
+}
+html.dark body.scene-atmosphere {
+  background-image: linear-gradient(to bottom, rgb(247 245 240 / 0.025) 0, transparent 34vh);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Header controls: a soft filled circle with a real 44px touch target. No
+   rim - on a dark header the ring around each button read as a hard line. */
+.chrome-button {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  border: 0;
+  background: color-mix(in oklab, var(--color-ink) 5%, transparent);
+  transition:
+    transform 260ms var(--ease-spring),
+    background-color 200ms var(--ease-ios);
+}
+.chrome-button:hover {
+  background: color-mix(in oklab, var(--color-ink) 9%, transparent);
+}
+.chrome-button:active {
+  transform: scale(0.92);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chrome-button {
+    transition: none;
+  }
+  .chrome-button:active {
+    transform: none;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   iOS COMPONENT VOCABULARY
+   ═════════════════════════════════════════════════════════════════════════
+
+   The material pass made Scout's surfaces feel like glass; this makes its
+   WORKING surfaces behave like an iPhone's. Scout's voice stays where the
+   voice belongs - the serif greeting, the terracotta, the brand marks. What
+   changes is the furniture: how a list is drawn, how a filter is chosen, how
+   a panel arrives.
+
+   Three patterns carry almost all of it on iOS:
+
+     GROUPED INSET LIST  rows inside one rounded container, separators inset
+                         to the text edge (never full width - that is the
+                         tell), a chevron on anything that navigates.
+     SEGMENTED CONTROL   one track, a sliding thumb, equal-width options.
+                         Not a row of pills - pills read as tags, a segment
+                         reads as a switch.
+     SHEET               rounded top, a grabber, and the layer behind it
+                         scales back so the sheet is clearly on top.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Grouped inset list ───────────────────────────────────────────────── */
+.ios-group {
+  border-radius: 18px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--color-paper) 88%, transparent);
+  box-shadow: var(--glass-rim);
+}
+html.dark .ios-group {
+  background: color-mix(in oklab, var(--color-paper) 74%, transparent);
+}
+/* The section label above a group: small, upper, tracked, quiet. */
+.ios-group-label {
+  padding: 0 1rem 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-4);
+}
+.ios-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 44px; /* the iOS touch target, not a coincidence */
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: transparent;
+  transition: background-color 140ms var(--ease-ios);
+}
+/* The separator is a child pseudo, INSET from the left to line up with the
+   row's text. A full-bleed rule is the single most common giveaway that a
+   list was drawn on the web. */
+.ios-row + .ios-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  right: 0;
+  height: var(--hairline);
+  background: color-mix(in oklab, var(--color-ink) 11%, transparent);
+}
+html.dark .ios-row + .ios-row::before {
+  background: rgb(247 245 240 / 0.08);
+}
+/* A row with a leading icon indents its separator past the icon instead. */
+.ios-row-inset + .ios-row-inset::before {
+  left: 3.25rem;
+}
+.ios-row:active {
+  background: color-mix(in oklab, var(--color-ink) 7%, transparent);
+}
+html.dark .ios-row:active {
+  background: rgb(247 245 240 / 0.08);
+}
+.ios-row-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--color-ink-4);
+  opacity: 0.65;
+}
+
+/* The inbox status switch: a fuller touch target, capped on desktop. */
+.inbox-status-tabs .ios-segment-option {
+  min-height: 40px;
+}
+@media (min-width: 640px) {
+  .inbox-status-tabs {
+    max-width: 25rem;
+  }
+}
+
+/* ── Segmented control ────────────────────────────────────────────────── */
+.ios-segment {
+  position: relative;
+  display: flex;
+  padding: 2px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--color-ink) 7%, transparent);
+}
+html.dark .ios-segment {
+  background: rgb(247 245 240 / 0.08);
+}
+.ios-segment-option {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  /* A segment label is one line, as on iOS: "Needs you 1" broke onto two
+     lines at 390px and doubled the control's height. A longer label takes a
+     wider share instead (flex-basis 0 + min-width auto); the thumb measures. */
+  white-space: nowrap;
+  min-height: 30px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-ink-2);
+  transition: color 180ms var(--ease-ios);
+}
+.ios-segment-option[aria-pressed="true"] {
+  color: var(--color-ink);
+}
+/* The thumb is a real element sliding on a spring, not a background colour
+   swapping between buttons - that difference is most of why the iOS control
+   feels physical. */
+.ios-segment-thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  z-index: 0;
+  border-radius: 8px;
+  background: var(--color-paper);
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.12),
+    var(--glass-catch);
+  transition:
+    transform 420ms var(--ease-spring),
+    width 420ms var(--ease-spring);
+}
+html.dark .ios-segment-thumb {
+  background: color-mix(in oklab, var(--color-paper) 92%, white 8%);
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.5),
+    var(--glass-catch);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ios-segment-thumb {
+    transition: none;
+  }
+}
+
+/* ── Sheet ────────────────────────────────────────────────────────────── */
+.ios-sheet {
+  border-radius: 22px 22px 0 0;
+  padding-bottom: var(--safe-b);
+  background: color-mix(in oklab, var(--color-paper) 86%, transparent);
+  -webkit-backdrop-filter: var(--mat-thick);
+  backdrop-filter: var(--mat-thick);
+  box-shadow:
+    var(--glass-catch),
+    var(--glass-rim),
+    0 -18px 50px -12px rgb(0 0 0 / 0.32);
+  animation: sheet-up 420ms var(--ease-ios) both;
+}
+.ios-sheet-grabber {
+  width: 36px;
+  height: 5px;
+  margin: 0.5rem auto 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-ink) 22%, transparent);
+}
+html.dark .ios-sheet-grabber {
+  background: rgb(247 245 240 / 0.24);
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ios-sheet {
+    animation: none;
+  }
+}
+
+/* The separator, for list rows that already have their own layout and only
+   need the RULE fixed. Scout drew these as `border-b border-tan-soft
+   last:border-0`, which is full-bleed and a full CSS pixel - the two things
+   that make a list read as web rather than as iOS. This is the same rule at
+   device-pixel weight, inset to the text edge, and it skips the last row for
+   the same reason `last:border-0` did.
+
+   Inset by default to 1rem (the row's own padding). A row that leads with an
+   avatar adds `ios-sep-avatar` so the rule starts past it, the way Mail and
+   Messages align theirs to the title rather than the artwork. */
+.ios-sep {
+  position: relative;
+}
+.ios-sep:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 1rem;
+  height: var(--hairline);
+  background: color-mix(in oklab, var(--color-ink) 11%, transparent);
+  pointer-events: none;
+}
+html.dark .ios-sep:not(:last-child)::after {
+  background: rgb(247 245 240 / 0.08);
+}
+.ios-sep-avatar:not(:last-child)::after {
+  left: 4rem;
+}
